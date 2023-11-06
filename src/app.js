@@ -3,6 +3,7 @@ const app = express();
 const Restaurant = require("../models/index");
 const db = require("../db/connection");
 const seed = require("../seed");
+// const router = require("../routes/restaurants");
 
 //TODO: Create your GET Request Route Below:
 app.use(express.json());
