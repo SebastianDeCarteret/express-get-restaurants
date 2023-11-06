@@ -1,15 +1,5 @@
-const express = require("express");
-const app = express();
 const Restaurant = require("../models/index");
-const db = require("../db/connection");
-const seed = require("../seed");
-
-//TODO: Create your GET Request Route Below:
-app.use(express.json());
-app.use(express.urlencoded());
-
-db.sync({ force: true }); // clear db
-seed(); // add data
+const app = require("../src/app");
 
 app.get("/restaurants", async (request, response) => {
   response.json(await Restaurant.findAll());
@@ -48,5 +38,3 @@ app.delete("/restaurants/:id", async (request, response) => {
   resturant.destroy();
   response.status(200).send("Deleted resturant");
 });
-
-module.exports = app;
