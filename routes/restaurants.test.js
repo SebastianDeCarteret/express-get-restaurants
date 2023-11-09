@@ -36,11 +36,43 @@ describe("Restuarant API tests:", () => {
         expect(object.cuisine).toEqual(seedRestaurant[index].cuisine);
       });
     });
-    it("POST should add a new resturant", async () => {
-      await request(app)
-        .post("/restaurants")
-        .send({ name: "Japanese", location: "Bristol", cuisine: "Japanese" });
+    it("POST should return a JSON response of the resturants with the new one", async () => {
+      const sendData = {
+        name: "Japanese",
+        location: "Bristol",
+        cuisine: "Japanese",
+      };
+      const response = await request(app).post("/restaurants").send(sendData);
+      response.body.forEach(async (object, index) => {
+        const resturantObj = await Restaurant.findByPk(index + 1);
+        expect(await object.cuisine).toBe(await resturantObj.cuisine);
+      });
+      //expect(response.body).toEqual(await Restaurant.findAll());
+    });
+    it("POST should add a new resturant when keys are not empty", async () => {
+      const sendData = {
+        name: "Japanese",
+        location: "Bristol",
+        cuisine: "Japanese",
+      };
+      const response = await request(app).post("/restaurants").send(sendData);
       expect((await Restaurant.findAll()).length).toBe(4);
+      expect(response.body.error).toBe(undefined);
+    });
+    it("POST should return error when keys are empty", async () => {
+      const sentData = { name: "", location: "", cuisine: "" };
+      const response = await request(app).post("/restaurants").send(sentData);
+      response.body.error.forEach((error, index) => {
+        console.log(error);
+        const errorMessageCurrent = {
+          location: "body",
+          path: Object.keys(sentData)[index], // get the key name at the index of loop
+          msg: "Invalid value",
+          type: "field",
+          value: "",
+        };
+        expect(error).toEqual(errorMessageCurrent);
+      });
     });
   });
 

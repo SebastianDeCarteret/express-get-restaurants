@@ -1,10 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const Restaurant = require("../models/index");
+const { check, validationResult } = require("express-validator");
 
 router.use((req, res, next) => {
   next();
 });
+
+router.use(express.json());
+router.use(express.urlencoded());
 
 router.get("/", async (request, response) => {
   const restuarants = await Restaurant.findAll();
@@ -20,11 +24,19 @@ router.get("/:id", async (request, response) => {
   response.json(resturant);
 });
 
-router.post("/", async (request, response) => {
-  await Restaurant.create(request.body);
-  console.log(request);
-  response.status(201).send("Added resturant");
-});
+router.post(
+  "/",
+  check(["name", "location", "cuisine"]).notEmpty(),
+  async (request, response) => {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      response.json({ error: errors.array() });
+    } else {
+      await Restaurant.create(request.body);
+      response.json(await Restaurant.findAll());
+    }
+  }
+);
 
 router.put("/:id", async (request, response) => {
   const resturant = await Restaurant.findByPk(request.params.id);

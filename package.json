@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",
+    "express-validator": "^7.0.1",
     "nodemon": "^3.0.1",
     "supertest": "^6.3.3"
   }
