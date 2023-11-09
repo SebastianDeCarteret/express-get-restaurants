@@ -43,11 +43,10 @@ describe("Restuarant API tests:", () => {
         cuisine: "Japanese",
       };
       const response = await request(app).post("/restaurants").send(sendData);
-      response.body.forEach(async (object, index) => {
-        const resturantObj = await Restaurant.findByPk(index + 1);
-        expect(await object.cuisine).toBe(await resturantObj.cuisine);
-      });
-      //expect(response.body).toEqual(await Restaurant.findAll());
+      const restaurants = await Restaurant.findAll();
+      expect(response.body[3].cuisine).toBe(
+        await restaurants[3].getDataValue("cuisine")
+      );
     });
     it("POST should add a new resturant when keys are not empty", async () => {
       const sendData = {
@@ -56,7 +55,10 @@ describe("Restuarant API tests:", () => {
         cuisine: "Japanese",
       };
       const response = await request(app).post("/restaurants").send(sendData);
-      expect((await Restaurant.findAll()).length).toBe(4);
+      const restaruantFound = await Restaurant.findByPk(4);
+      expect(restaruantFound.name).toEqual(sendData.name);
+      expect(restaruantFound.location).toEqual(sendData.location);
+      expect(restaruantFound.cuisine).toEqual(sendData.cuisine);
       expect(response.body.error).toBe(undefined);
     });
     it("POST should return error when keys are empty", async () => {
